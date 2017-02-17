@@ -100,19 +100,22 @@ TPscene.prototype.display = function () {
 	// ---- END Background, camera and axis setup
 
 	
-	// ---- BEGIN Geometric transformation section
+	// ---- BEGIN 1st Object drawing/transformation
 
-	// Multiplication of the previous transformations
-	//this.multMatrix(this.tra);     // GT = GT * tra
-	//this.multMatrix(this.rot);     // GT = GT * rot
-	//this.multMatrix(this.sca);     // GT = GT * sca
+	this.pushMatrix();
+	this.translate(0.0, 5.0, 0.0);
+	this.obj.display();
+	this.popMatrix();
 
-	// ---- END Geometric transformation section
+	// ---- BEGIN 2nd Object drawing/transformation
 	
-
-	// ---- BEGIN Primitive drawing section
+	this.scale(5.0, 2.0, 1.0);
+	this.translate(5.0, 0.0, 2.0);
+	//this.rotate(Math.PI/6.0, 0.0, 1.0, 0.0);
+	
+	// ---- END 1st Object drawing/transformation
 
 	this.obj.display();
 	
-	// ---- END Primitive drawing section
+	// ---- END 2nd Object drawing/transformation
 };
