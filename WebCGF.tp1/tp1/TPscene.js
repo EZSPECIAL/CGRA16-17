@@ -22,8 +22,8 @@ TPscene.prototype.init = function (application) {
     this.gl.depthFunc(this.gl.LEQUAL);
 
 	this.axis = new CGFaxis(this);
-    this.obj = new MyObject(this);
-
+    this.cube = new MyUnitCube(this);
+    this.cubeQuad = new MyUnitCubeQuad(this);
 
     // NOTE: OpenGL transformation matrices are transposed
 
@@ -99,23 +99,12 @@ TPscene.prototype.display = function () {
 	
 	// ---- END Background, camera and axis setup
 
+	// ---- BEGIN object drawing/transformation
 	
-	// ---- BEGIN 1st Object drawing/transformation
-
-	this.pushMatrix();
-	this.translate(0.0, 5.0, 0.0);
-	this.obj.display();
-	this.popMatrix();
-
-	// ---- BEGIN 2nd Object drawing/transformation
+	this.cube.display();
 	
-	this.scale(5.0, 2.0, 1.0);
-	this.translate(5.0, 0.0, 2.0);
-	//this.rotate(Math.PI/6.0, 0.0, 1.0, 0.0);
+	this.translate(2.0, 0.0, 0.0);
+	this.cubeQuad.display();
 	
-	// ---- END 1st Object drawing/transformation
-
-	this.obj.display();
-	
-	// ---- END 2nd Object drawing/transformation
+	// ---- END object drawing/transformation
 };
