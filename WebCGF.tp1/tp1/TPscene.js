@@ -22,39 +22,8 @@ TPscene.prototype.init = function (application) {
     this.gl.depthFunc(this.gl.LEQUAL);
 
 	this.axis = new CGFaxis(this);
-    this.cube = new MyUnitCube(this);
-    this.cubeQuad = new MyUnitCubeQuad(this);
-
-    // NOTE: OpenGL transformation matrices are transposed
-
-	// Translate (5, 0, 2)
-	
-    this.tra = [ 1.0, 0.0, 0.0, 0.0,
-                 0.0, 1.0, 0.0, 0.0,
-                 0.0, 0.0, 1.0, 0.0,
-                 5.0, 0.0, 2.0, 1.0 ];
-
-	// Rotate 30 degrees around Y
-	// These constants would normally be pre-computed at initialization time
-	// they are placed here just to simplify the example
-	
-	this.deg2rad=Math.PI/180.0;
-	var a_rad = 30.0 * this.deg2rad;
-	var cos_a = Math.cos(a_rad);
-	var sin_a = Math.sin(a_rad);
-
-    this.rot = [ cos_a,  0.0,  -sin_a,  0.0,
-                0.0,    1.0,   0.0,    0.0,
-                sin_a,  0.0,   cos_a,  0.0,
-                0.0,    0.0,   0.0,    1.0 ];
-
-	// Scaling by (5,2,1)
-
-    this.sca = [ 5.0, 0.0, 0.0, 0.0,
-                0.0, 2.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                0.0, 0.0, 0.0, 1.0 ];
-
+    this.table = new MyTable(this);
+    this.floor = new MyFloor(this);
 };
 
 TPscene.prototype.initLights = function () {
@@ -100,11 +69,17 @@ TPscene.prototype.display = function () {
 	// ---- END Background, camera and axis setup
 
 	// ---- BEGIN object drawing/transformation
+
+	//Translate floor/table combo
+	this.translate(4.0, 0.0, 3.0);
 	
-	this.cube.display();
-	
-	this.translate(2.0, 0.0, 0.0);
-	this.cubeQuad.display();
+	//Elevate table to rest on floor
+	this.pushMatrix();
+	this.translate(0.0, 0.1, 0.0);
+	this.table.display();
+	this.popMatrix();
+    
+	this.floor.display();
 	
 	// ---- END object drawing/transformation
 };
