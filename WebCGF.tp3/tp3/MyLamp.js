@@ -23,10 +23,9 @@ MyLamp.prototype.initBuffers = function() {
 	var theta_inc = Math.PI / 2 / this.stacks;
 
 	//Repeats top vertex info for each slice
-	for(var i = 0; i < this.slices; i++) {
+	for(var i = 0; i <= this.slices; i++) {
 		for(var j = 0; j <= this.stacks; j++) {
 			vertices.push(Math.sin(theta_inc * j) * Math.cos(phi_inc * i), Math.cos(theta_inc * j), Math.sin(theta_inc * j) * Math.sin(phi_inc * i));
-
 			normals.push(Math.sin(theta_inc * j) * Math.cos(phi_inc * i), Math.cos(theta_inc * j), Math.sin(theta_inc * j) * Math.sin(phi_inc * i));
 		}
 	}
@@ -34,23 +33,13 @@ MyLamp.prototype.initBuffers = function() {
 	for(var i = 0; i < this.slices; i++) {
 		var i_inc = (this.stacks + 1) * i;
 		for(var j = 0; j < this.stacks; j++) {
-			if(i + 1 == this.slices) {
-				indices.push(i_inc + j);
-				indices.push(j + 1);
-				indices.push(i_inc + j + 1);
+			indices.push(i_inc + j);
+			indices.push(i_inc + j + (this.stacks + 1) + 1);
+			indices.push(i_inc + j + 1);
 
-				indices.push(j);
-				indices.push(j + 1);
-				indices.push(i_inc + j);
-			} else {
-				indices.push(i_inc + j);
-				indices.push(i_inc + j + (this.stacks + 1) + 1);
-				indices.push(i_inc + j + 1);
-
-				indices.push(i_inc + j + (this.stacks + 1));
-				indices.push(i_inc + j + (this.stacks + 1) + 1);
-				indices.push(i_inc + j);
-			}
+			indices.push(i_inc + j + (this.stacks + 1));
+			indices.push(i_inc + j + (this.stacks + 1) + 1);
+			indices.push(i_inc + j);
 		}
 	}
 

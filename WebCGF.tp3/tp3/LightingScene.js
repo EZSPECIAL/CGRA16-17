@@ -90,16 +90,19 @@ LightingScene.prototype.initLights = function() {
 
 	this.setGlobalAmbientLight(0.5, 0.5, 0.5, 1.0);
 
-	//Positions for four lights
+	//Left board
 	this.lights[0].setPosition(4.0, 6.0, 1.0, 1.0);
 	this.lights[0].setVisible(true);
 
+	//Right board
 	this.lights[1].setPosition(10.5, 6.0, 1.0, 1.0);
 	this.lights[1].setVisible(true);
 
+	//Lamp
 	this.lights[2].setPosition(7.5, 8.0, 7.5, 1.0);
 	this.lights[2].setVisible(true);
 
+	//Light values for all lights
 	this.lights[0].setAmbient(0, 0, 0, 1);
 	this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[0].setSpecular(1.0, 1.0, 0.0, 1.0);
@@ -123,7 +126,7 @@ LightingScene.prototype.updateLights = function() {
 
 
 LightingScene.prototype.display = function() {
-	
+
 	// ---- BEGIN Background, camera and axis setup
 
 	// Clear image and depth buffer everytime we update the scene
@@ -154,7 +157,7 @@ LightingScene.prototype.display = function() {
 	this.rotate(Math.PI / 2, -1, 0, 0);
 	this.lampTop.display();
 	this.popMatrix();
-	
+
 	//Prism Top
 	this.pushMatrix();
 	this.translate(14.0, 8.0, 14.0);
@@ -170,14 +173,14 @@ LightingScene.prototype.display = function() {
 	this.rotate(Math.PI / 2, -1, 0, 0);
 	this.cylinderTop.display();
 	this.popMatrix();
-	
+
 	//Lamp
 	this.pushMatrix();
 	this.translate(7.5, 9.0, 7.5);
 	this.rotate(Math.PI, 0, 0, 1);
 	this.lamp.display();
 	this.popMatrix();
-	
+
 	//Prism
 	this.pushMatrix();
 	this.translate(14.0, 0.0, 14.0);
@@ -185,7 +188,7 @@ LightingScene.prototype.display = function() {
 	this.rotate(Math.PI / 2, -1, 0, 0);
 	this.prism.display();
 	this.popMatrix();
-	
+
 	//Cylinder
 	this.pushMatrix();
 	this.translate(1.05, 0.0, 14.0);
@@ -236,7 +239,6 @@ LightingScene.prototype.display = function() {
 	this.pushMatrix();
 	this.translate(4, 4.5, 0.2);
 	this.scale(BOARD_WIDTH, BOARD_HEIGHT, 1);
-
 	this.materialA.apply();
 	this.boardA.display();
 	this.popMatrix();
@@ -245,7 +247,6 @@ LightingScene.prototype.display = function() {
 	this.pushMatrix();
 	this.translate(10.5, 4.5, 0.2);
 	this.scale(BOARD_WIDTH, BOARD_HEIGHT, 1);
-
 	this.materialB.apply();
 	this.boardB.display();
 	this.popMatrix();

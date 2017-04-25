@@ -12,7 +12,7 @@ function Plane(scene, nrDivs, xres, yres) {
 	this.patchLength = 1.0 / nrDivs;
 	this.xres = xres;
 	this.yres = yres;
-	
+
 	this.initBuffers();
 };
 
@@ -34,7 +34,7 @@ Plane.prototype.initBuffers = function() {
 	        |
 	12  13  |  14  15    
 
-	*/
+	 */
 
 	// Generate vertices and normals 
 	this.vertices = [];
@@ -47,23 +47,23 @@ Plane.prototype.initBuffers = function() {
 	var y_adjust = (1 / this.yres - 1) / 2;
 	var yCoord = 0.5;
 
-	for (var j = 0; j <= this.nrDivs; j++) {
+	for(var j = 0; j <= this.nrDivs; j++) {
 		var xCoord = -0.5;
-		for (var i = 0; i <= this.nrDivs; i++) {
-			
+		for(var i = 0; i <= this.nrDivs; i++) {
+
 			this.vertices.push(xCoord, yCoord, 0);
-			
+
 			// As this plane is being drawn on the xy plane, the normal to the plane will be along the positive z axis.
 			// So all the vertices will have the same normal, (0, 0, 1).
 			this.normals.push(0,0,1);
-			
+
 			this.texCoords.push(i * x_inc - x_adjust, j * y_inc - y_adjust);
 
 			xCoord += this.patchLength;
 		}
 		yCoord -= this.patchLength;
 	}
-	
+
 	// Generating indices
 	/* for nrDivs = 3 output will be 
 		[
@@ -76,46 +76,26 @@ Plane.prototype.initBuffers = function() {
 	Interpreting this index list as a TRIANGLE_STRIP will draw rows of the plane (with degenerate triangles in between. */
 
 	this.indices = [];
-	var ind=0;
+	var ind = 0;
 
-
-	for (var j = 0; j < this.nrDivs; j++) 
+	for(var j = 0; j < this.nrDivs; j++) 
 	{
-		for (var i = 0; i <= this.nrDivs; i++) 
+		for(var i = 0; i <= this.nrDivs; i++) 
 		{
 			this.indices.push(ind);
-			this.indices.push(ind+this.nrDivs+1);
+			this.indices.push(ind + this.nrDivs + 1);
 
 			ind++;
 		}
-		if (j+1 < this.nrDivs)
+		if(j+1 < this.nrDivs)
 		{
 			// Extra vertices to create degenerate triangles so that the strip can wrap on the next row
 			// degenerate triangles will not generate fragments
-			this.indices.push(ind+this.nrDivs);
+			this.indices.push(ind + this.nrDivs);
 			this.indices.push(ind);
 		}
 	}
-	
+
 	this.primitiveType = this.scene.gl.TRIANGLE_STRIP;
-
-/* Alternative with TRIANGLES instead of TRIANGLE_STRIP. More indices, but no degenerate triangles */
-/*
-	for (var j = 0; j < this.nrDivs; j++) 
-	{
-		for (var i = 0; i < this.nrDivs; i++) 
-		{
-			this.indices.push(ind, ind+this.nrDivs+1, ind+1);
-			this.indices.push(ind+1, ind+this.nrDivs+1, ind+this.nrDivs+2 );
-
-			ind++;
-		}
-		ind++;
-	}
-
-	this.primitiveType = this.scene.gl.TRIANGLES;
-*/
-
 	this.initGLBuffers();
 };
-

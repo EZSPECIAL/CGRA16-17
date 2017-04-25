@@ -35,9 +35,13 @@ LightingScene.prototype.init = function(application) {
 	this.floor = new MyQuad(this, 0, 10, 0, 12);
 	this.prism = new MyPrism(this, 8, 20);
 	this.cylinder = new MyCylinder(this, 8, 20);
-	
+	this.lamp = new MyLamp(this, 8, 20);
+	this.prismTop = new MyCircle(this, 8);
+	this.cylinderTop = new MyCircle(this, 8);
+	this.lampTop = new MyCircle(this, 8);
+
 	this.windowWall = new MyQuad(this, 0.0 - 1.375, 1.0 + 1.375, 0.0 - 0.5, 1.0 + 0.5);
-	
+
 	this.boardA = new Plane(this, BOARD_A_DIVISIONS);
 	this.boardB = new Plane(this, BOARD_B_DIVISIONS, 0.9175, 1.0);
 
@@ -48,7 +52,7 @@ LightingScene.prototype.init = function(application) {
 	this.tableAppearance.setSpecular(0.20, 0.14, 0.08, 1.0);
 	this.tableAppearance.setShininess(20);
 	this.tableAppearance.loadTexture("../resources/images/table.png");
-	
+
 	this.floorAppearance = new CGFappearance(this);
 	this.floorAppearance.setAmbient(0.05, 0.05, 0.05, 1.0);
 	this.floorAppearance.setDiffuse(0.5, 0.5, 0.5, 1.0);
@@ -59,21 +63,31 @@ LightingScene.prototype.init = function(application) {
 	this.windowAppearance = new CGFappearance(this);
 	this.windowAppearance.loadTexture("../resources/images/window.png");
 	this.windowAppearance.setTextureWrap("CLAMP_TO_EDGE", "CLAMP_TO_EDGE");
-	
+
 	this.slidesAppearance = new CGFappearance(this);
 	this.slidesAppearance.setAmbient(0.3, 0.3, 0.3, 1.0);
 	this.slidesAppearance.setDiffuse(0.6, 0.6, 0.6, 1.0);
 	this.slidesAppearance.setSpecular(0.1, 0.1, 0.1, 1.0);
 	this.slidesAppearance.setShininess(10);
 	this.slidesAppearance.loadTexture("../resources/images/slides.png");
-	
+
 	this.boardAppearance = new CGFappearance(this);
 	this.boardAppearance.setAmbient(0.3, 0.3, 0.3, 1.0);
 	this.boardAppearance.setDiffuse(0.4, 0.4, 0.4, 1.0);
 	this.boardAppearance.setSpecular(0.55, 0.55, 0.55, 1.0);
 	this.boardAppearance.setShininess(120);
 	this.boardAppearance.loadTexture("../resources/images/board.png");
-	
+
+	this.columnAppearance = new CGFappearance(this);
+	this.columnAppearance.setAmbient(0.3, 0.3, 0.3, 1.0);
+	this.columnAppearance.setDiffuse(0.4, 0.4, 0.4, 1.0);
+	this.columnAppearance.setSpecular(0.55, 0.55, 0.55, 1.0);
+	this.columnAppearance.setShininess(120);
+	this.columnAppearance.loadTexture("../resources/images/marble.jpg");
+
+	this.lampAppearance = new CGFappearance(this);
+	this.lampAppearance.loadTexture("../resources/images/glass.jpg");
+
 	// Materials
 	this.materialDefault = new CGFappearance(this);
 
@@ -98,16 +112,23 @@ LightingScene.prototype.initLights = function() {
 
 	this.setGlobalAmbientLight(0.5, 0.5, 0.5, 1.0);
 
-	//Positions for four lights
+	//Left board
 	this.lights[0].setPosition(4.0, 6.0, 1.0, 1.0);
 	this.lights[0].setVisible(true);
 
+	//Right board
 	this.lights[1].setPosition(10.5, 6.0, 1.0, 1.0);
 	this.lights[1].setVisible(true);
 
+	//Window
 	this.lights[2].setPosition(0.1, 5.0, 7.5, 1.0);
 	this.lights[2].setVisible(true);
 
+	//Lamp
+	this.lights[3].setPosition(7.5, 8.0, 7.5, 1.0);
+	this.lights[3].setVisible(true);
+
+	//Light values for all lights
 	this.lights[0].setAmbient(0.0, 0.0, 0.0, 1.0);
 	this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[0].setSpecular(1.0, 1.0, 0.0, 1.0);
@@ -121,6 +142,12 @@ LightingScene.prototype.initLights = function() {
 	this.lights[2].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[2].setSpecular(1.0, 1.0, 1.0, 1.0);
 	this.lights[2].enable();
+
+	this.lights[3].setAmbient(0, 0, 0, 1);
+	this.lights[3].setDiffuse(1.0, 1.0, 1.0, 1.0);
+	this.lights[3].setSpecular(1.0, 1.0, 1.0, 1.0);
+	this.lights[3].setLinearAttenuation(0.5);
+	this.lights[3].enable();
 };
 
 LightingScene.prototype.updateLights = function() {
@@ -130,7 +157,7 @@ LightingScene.prototype.updateLights = function() {
 
 
 LightingScene.prototype.display = function() {
-	
+
 	// ---- BEGIN Background, camera and axis setup
 
 	// Clear image and depth buffer everytime we update the scene
@@ -155,26 +182,55 @@ LightingScene.prototype.display = function() {
 
 	// ---- BEGIN Primitive drawing section
 
-	this.gl.disable(this.gl.CULL_FACE);
-	
+	//Lamp Top
+	this.pushMatrix();
+	this.translate(7.5, 9.0, 7.5);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.lampTop.display();
+	this.popMatrix();
+
+	//Prism Top
+	this.pushMatrix();
+	this.translate(14.0, 8.0, 14.0);
+	this.scale(1.0, 8.0, 1.0);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.prismTop.display();
+	this.popMatrix();
+
+	//Cylinder Top
+	this.pushMatrix();
+	this.translate(1.05, 8.0, 14.0);
+	this.scale(1.0, 8.0, 1.0);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.cylinderTop.display();
+	this.popMatrix();
+
+	//Lamp
+	this.pushMatrix();
+	this.translate(7.5, 9.0, 7.5);
+	this.rotate(Math.PI, 0, 0, 1);
+	this.lampAppearance.apply();
+	this.lamp.display();
+	this.popMatrix();
+
 	//Prism
 	this.pushMatrix();
 	this.translate(14.0, 0.0, 14.0);
 	this.scale(1.0, 8.0, 1.0);
 	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.columnAppearance.apply();
 	this.prism.display();
 	this.popMatrix();
-	
+
 	//Cylinder
 	this.pushMatrix();
 	this.translate(1.05, 0.0, 14.0);
 	this.scale(1.0, 8.0, 1.0);
 	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.columnAppearance.apply();
 	this.cylinder.display();
 	this.popMatrix();
 
-	this.gl.enable(this.gl.CULL_FACE);
-	
 	//Floor
 	this.pushMatrix();
 	this.translate(7.5, 0, 7.5);

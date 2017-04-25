@@ -32,13 +32,13 @@ LightingScene.prototype.init = function(application) {
 	this.table = new MyTable(this);
 	this.wall = new Plane(this);
 	this.floor = new MyQuad(this);
-	
+
 	this.boardA = new Plane(this, BOARD_A_DIVISIONS);
 	this.boardB = new Plane(this, BOARD_B_DIVISIONS);
 
 	// Materials
 	this.materialDefault = new CGFappearance(this);
-	
+
 	this.materialA = new CGFappearance(this);
 	this.materialA.setAmbient(0.3, 0.3, 0.3, 1.0);
 	this.materialA.setDiffuse(0.6, 0.6, 0.6, 1.0);
@@ -50,25 +50,25 @@ LightingScene.prototype.init = function(application) {
 	this.materialB.setDiffuse(0.6, 0.6, 0.6, 1.0);
 	this.materialB.setSpecular(0.8, 0.8, 0.8, 1.0);
 	this.materialB.setShininess(120);
-	
+
 	this.materialWood = new CGFappearance(this);
 	this.materialWood.setAmbient(0.21, 0.12, 0.05, 1.0);
 	this.materialWood.setDiffuse(0.71, 0.42, 0.18, 1.0);
 	this.materialWood.setSpecular(0.20, 0.14, 0.08, 1.0);
 	this.materialWood.setShininess(20);
-	
+
 	this.materialChrome = new CGFappearance(this);
 	this.materialChrome.setAmbient(0.25, 0.25, 0.25, 1.0);
 	this.materialChrome.setDiffuse(0.40, 0.40, 0.40, 1.0);
 	this.materialChrome.setSpecular(0.77, 0.77, 0.77, 1.0);
 	this.materialChrome.setShininess(77);
-	
+
 	this.materialCyan = new CGFappearance(this);
 	this.materialCyan.setAmbient(0.1, 0.18, 0.17, 0.8);
 	this.materialCyan.setDiffuse(0.39, 0.74, 0.69, 0.8);
 	this.materialCyan.setSpecular(0.29, 0.30, 0.30, 0.8);
 	this.materialCyan.setShininess(13);
-	
+
 	this.materialWhite = new CGFappearance(this);
 	this.materialWhite.setAmbient(0.05, 0.05, 0.05, 1.0);
 	this.materialWhite.setDiffuse(0.5, 0.5, 0.5, 1.0);
@@ -81,20 +81,19 @@ LightingScene.prototype.initCameras = function() {
 };
 
 LightingScene.prototype.initLights = function() {
-	
-	//this.setGlobalAmbientLight(0.5, 0.5, 0.5, 1.0);
-	this.setGlobalAmbientLight(0.0, 0.0, 0.0, 1.0);
-	
+
+	this.setGlobalAmbientLight(0.5, 0.5, 0.5, 1.0);
+
 	// Positions for four lights
 	this.lights[0].setPosition(4.0, 6.0, 1.0, 1.0);
 	this.lights[0].setVisible(true); // show marker on light position (different from enabled)
-	
+
 	this.lights[1].setPosition(10.5, 6.0, 1.0, 1.0);
 	this.lights[1].setVisible(true); // show marker on light position (different from enabled)
 
 	this.lights[2].setPosition(10.5, 6.0, 5.0, 1.0);
 	this.lights[2].setVisible(true); // show marker on light position (different from enabled)
-	
+
 	this.lights[3].setPosition(4.0, 6.0, 5.0, 1.0);
 	this.lights[3].setVisible(true); // show marker on light position (different from enabled)
 
@@ -106,19 +105,19 @@ LightingScene.prototype.initLights = function() {
 	this.lights[1].setAmbient(0, 0, 0, 1);
 	this.lights[1].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[1].enable();
-	
+
 	this.lights[2].setAmbient(0, 0, 0, 1);
 	this.lights[2].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[2].setSpecular(1.0, 1.0, 1.0, 1.0);
-    this.lights[2].setConstantAttenuation(0.0);
-    this.lights[2].setLinearAttenuation(1.0);
+	this.lights[2].setConstantAttenuation(0.0);
+	this.lights[2].setLinearAttenuation(1.0);
 	this.lights[2].enable();
-	
+
 	this.lights[3].setAmbient(0, 0, 0, 1);
 	this.lights[3].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[3].setSpecular(1.0, 1.0, 0.0, 1.0);
-    this.lights[3].setConstantAttenuation(0.0);
-    this.lights[3].setQuadraticAttenuation(1.0);
+	this.lights[3].setConstantAttenuation(0.0);
+	this.lights[3].setQuadraticAttenuation(1.0);
 	this.lights[3].enable();
 };
 
@@ -156,58 +155,56 @@ LightingScene.prototype.display = function() {
 
 	// Floor
 	this.pushMatrix();
-		this.translate(7.5, 0, 7.5);
-		this.rotate(-90 * degToRad, 1, 0, 0);
-		this.scale(15, 15, 0.2);
-		this.materialWhite.apply();
-		this.floor.display();
+	this.translate(7.5, 0, 7.5);
+	this.rotate(-90 * degToRad, 1, 0, 0);
+	this.scale(15, 15, 0.2);
+	this.materialWhite.apply();
+	this.floor.display();
 	this.popMatrix();
 
 	// Left Wall
 	this.pushMatrix();
-		this.translate(0, 4, 7.5);
-		this.rotate(90 * degToRad, 0, 1, 0);
-		this.scale(15, 8, 0.2);
-		this.materialCyan.apply();
-		this.wall.display();
+	this.translate(0, 4, 7.5);
+	this.rotate(90 * degToRad, 0, 1, 0);
+	this.scale(15, 8, 0.2);
+	this.materialCyan.apply();
+	this.wall.display();
 	this.popMatrix();
 
 	// Plane Wall
 	this.pushMatrix();
-		this.translate(7.5, 4, 0);
-		this.scale(15, 8, 0.2);
-		this.materialCyan.apply();
-		this.wall.display();
+	this.translate(7.5, 4, 0);
+	this.scale(15, 8, 0.2);
+	this.materialCyan.apply();
+	this.wall.display();
 	this.popMatrix();
 
 	// First Table
 	this.pushMatrix();
-		this.translate(5, 0, 8);
-		this.table.display();
+	this.translate(5, 0, 8);
+	this.table.display();
 	this.popMatrix();
 
 	// Second Table
 	this.pushMatrix();
-		this.translate(12, 0, 8);
-		this.table.display();
+	this.translate(12, 0, 8);
+	this.table.display();
 	this.popMatrix();
 
 	// Board A
 	this.pushMatrix();
-		this.translate(4, 4.5, 0.2);
-		this.scale(BOARD_WIDTH, BOARD_HEIGHT, 1);
-		
-		this.materialA.apply();
-		this.boardA.display();
+	this.translate(4, 4.5, 0.2);
+	this.scale(BOARD_WIDTH, BOARD_HEIGHT, 1);
+	this.materialA.apply();
+	this.boardA.display();
 	this.popMatrix();
 
 	// Board B
 	this.pushMatrix();
-		this.translate(10.5, 4.5, 0.2);
-		this.scale(BOARD_WIDTH, BOARD_HEIGHT, 1);
-		
-		this.materialB.apply();
-		this.boardB.display();
+	this.translate(10.5, 4.5, 0.2);
+	this.scale(BOARD_WIDTH, BOARD_HEIGHT, 1);
+	this.materialB.apply();
+	this.boardB.display();
 	this.popMatrix();
 
 	// ---- END Primitive drawing section

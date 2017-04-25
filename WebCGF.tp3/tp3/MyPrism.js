@@ -23,7 +23,7 @@ MyPrism.prototype.initBuffers = function() {
 	var height_inc = 1.0 / this.stacks;
 
 
-	for(var i = 0; i < this.slices; i++) {
+	for(var i = 0; i <= this.slices; i++) {
 		for(var j = 0; j <= this.stacks; j++) {
 			vertices.push(Math.cos(increment * i), Math.sin(increment * i), height_inc * j);
 			vertices.push(Math.cos(increment * i), Math.sin(increment * i), height_inc * j);
@@ -37,23 +37,13 @@ MyPrism.prototype.initBuffers = function() {
 		var i_inc = (this.stacks + 1) * 2 * i;
 		for(var j = 0; j < this.stacks; j++) {
 			for(n = 0; n < 2; n++) {
-				if(i + 1 == this.slices) {
-					indices.push(i_inc + j * 2 + n);
-					indices.push(j * 2 + 2 + n);
-					indices.push(i_inc + j * 2 + 2 + n);
-					
-					indices.push(j * 2 + n);
-					indices.push(j * 2 + 2 + n);
-					indices.push(i_inc + j * 2 + n);
-				} else {
-					indices.push(i_inc + j * 2 + n);
-					indices.push(i_inc + j * 2 + (this.stacks + 1) * 2 + 2 + n);
-					indices.push(i_inc + j * 2 + 2 + n);
-					
-					indices.push(i_inc + j * 2 + (this.stacks + 1) * 2 + n);
-					indices.push(i_inc + j * 2 + (this.stacks + 1) * 2 + 2 + n);
-					indices.push(i_inc + j * 2 + n);
-				}
+				indices.push(i_inc + j * 2 + n);
+				indices.push(i_inc + j * 2 + (this.stacks + 1) * 2 + 2 + n);
+				indices.push(i_inc + j * 2 + 2 + n);
+
+				indices.push(i_inc + j * 2 + (this.stacks + 1) * 2 + n);
+				indices.push(i_inc + j * 2 + (this.stacks + 1) * 2 + 2 + n);
+				indices.push(i_inc + j * 2 + n);
 			}
 		}
 	}
