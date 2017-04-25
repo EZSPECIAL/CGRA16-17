@@ -34,6 +34,10 @@ LightingScene.prototype.init = function(application) {
 	this.floor = new MyQuad(this);
 	this.prism = new MyPrism(this, 8, 20);
 	this.cylinder = new MyCylinder(this, 8, 20);
+	this.lamp = new MyLamp(this, 8, 20);
+	this.prismTop = new MyCircle(this, 8);
+	this.cylinderTop = new MyCircle(this, 8);
+	this.lampTop = new MyCircle(this, 8);
 
 	this.boardA = new Plane(this, BOARD_A_DIVISIONS);
 	this.boardB = new Plane(this, BOARD_B_DIVISIONS);
@@ -93,11 +97,8 @@ LightingScene.prototype.initLights = function() {
 	this.lights[1].setPosition(10.5, 6.0, 1.0, 1.0);
 	this.lights[1].setVisible(true);
 
-	this.lights[2].setPosition(10.5, 6.0, 5.0, 1.0);
+	this.lights[2].setPosition(7.5, 8.0, 7.5, 1.0);
 	this.lights[2].setVisible(true);
-
-	this.lights[3].setPosition(4.0, 6.0, 5.0, 1.0);
-	this.lights[3].setVisible(true);
 
 	this.lights[0].setAmbient(0, 0, 0, 1);
 	this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
@@ -111,16 +112,8 @@ LightingScene.prototype.initLights = function() {
 	this.lights[2].setAmbient(0, 0, 0, 1);
 	this.lights[2].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[2].setSpecular(1.0, 1.0, 1.0, 1.0);
-	this.lights[2].setConstantAttenuation(0.0);
-	this.lights[2].setLinearAttenuation(1.0);
+	this.lights[2].setLinearAttenuation(0.5);
 	this.lights[2].enable();
-
-	this.lights[3].setAmbient(0, 0, 0, 1);
-	this.lights[3].setDiffuse(1.0, 1.0, 1.0, 1.0);
-	this.lights[3].setSpecular(1.0, 1.0, 0.0, 1.0);
-	this.lights[3].setConstantAttenuation(0.0);
-	this.lights[3].setQuadraticAttenuation(1.0);
-	this.lights[3].enable();
 };
 
 LightingScene.prototype.updateLights = function() {
@@ -155,7 +148,35 @@ LightingScene.prototype.display = function() {
 
 	// ---- BEGIN Primitive drawing section
 
-	this.gl.disable(this.gl.CULL_FACE);
+	//Lamp Top
+	this.pushMatrix();
+	this.translate(7.5, 9.0, 7.5);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.lampTop.display();
+	this.popMatrix();
+	
+	//Prism Top
+	this.pushMatrix();
+	this.translate(14.0, 8.0, 14.0);
+	this.scale(1.0, 8.0, 1.0);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.prismTop.display();
+	this.popMatrix();
+
+	//Cylinder Top
+	this.pushMatrix();
+	this.translate(1.05, 8.0, 14.0);
+	this.scale(1.0, 8.0, 1.0);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.cylinderTop.display();
+	this.popMatrix();
+	
+	//Lamp
+	this.pushMatrix();
+	this.translate(7.5, 9.0, 7.5);
+	this.rotate(Math.PI, 0, 0, 1);
+	this.lamp.display();
+	this.popMatrix();
 	
 	//Prism
 	this.pushMatrix();
@@ -173,8 +194,6 @@ LightingScene.prototype.display = function() {
 	this.cylinder.display();
 	this.popMatrix();
 
-	this.gl.enable(this.gl.CULL_FACE);
-	
 	//Floor
 	this.pushMatrix();
 	this.translate(7.5, 0, 7.5);
