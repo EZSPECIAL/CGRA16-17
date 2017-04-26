@@ -39,13 +39,16 @@ LightingScene.prototype.init = function(application) {
 	this.floor = new MyQuad(this, 0, 10, 0, 12);
 	this.prism = new MyPrism(this, 8, 20);
 	this.cylinder = new MyCylinder(this, 8, 20);
-	this.windowWall = new MyQuad(this, 0.0 - 1.375, 1.0 + 1.375, 0.0 - 0.5, 1.0 + 0.5);
-	this.boardA = new Plane(this, BOARD_A_DIVISIONS);
-	this.boardB = new Plane(this, BOARD_B_DIVISIONS, 0.9175, 1.0);
+	this.lamp = new MyLamp(this, 8, 20);
 	this.prismTop = new MyCircle(this, 8);
 	this.cylinderTop = new MyCircle(this, 8);
+	this.lampTop = new MyCircle(this, 8);
+	this.windowWall = new MyQuad(this, 0.0 - 1.375, 1.0 + 1.375, 0.0 - 0.5, 1.0 + 0.5);
 	this.clock = new MyClock(this);
 	this.paperPlane = new MyPaperPlane(this);
+	
+	this.boardA = new Plane(this, BOARD_A_DIVISIONS);
+	this.boardB = new Plane(this, BOARD_B_DIVISIONS, 0.9175, 1.0);
 	
 	//Textures
 	this.tableAppearance = new CGFappearance(this);
@@ -87,6 +90,16 @@ LightingScene.prototype.init = function(application) {
 	this.clockAppearance.setShininess(10);
 	this.clockAppearance.loadTexture("../resources/images/clock.png");
 	
+	this.columnAppearance = new CGFappearance(this);
+	this.columnAppearance.setAmbient(0.3, 0.3, 0.3, 1.0);
+	this.columnAppearance.setDiffuse(0.4, 0.4, 0.4, 1.0);
+	this.columnAppearance.setSpecular(0.55, 0.55, 0.55, 1.0);
+	this.columnAppearance.setShininess(120);
+	this.columnAppearance.loadTexture("../resources/images/marble.jpg");
+
+	this.lampAppearance = new CGFappearance(this);
+	this.lampAppearance.loadTexture("../resources/images/glass.jpg");
+	
 	// Materials
 	this.materialDefault = new CGFappearance(this);
 
@@ -126,16 +139,23 @@ LightingScene.prototype.initLights = function() {
 
 	this.setGlobalAmbientLight(0.5, 0.5, 0.5, 1.0);
 
-	//Positions for four lights
+	//Left board
 	this.lights[0].setPosition(4.0, 6.0, 1.0, 1.0);
 	this.lights[0].setVisible(true);
 
+	//Right board
 	this.lights[1].setPosition(10.5, 6.0, 1.0, 1.0);
 	this.lights[1].setVisible(true);
 
+	//Window
 	this.lights[2].setPosition(0.1, 5.0, 7.5, 1.0);
 	this.lights[2].setVisible(true);
 
+	//Lamp
+	this.lights[3].setPosition(7.5, 8.0, 7.5, 1.0);
+	this.lights[3].setVisible(true);
+
+	//Light values for all lights
 	this.lights[0].setAmbient(0.0, 0.0, 0.0, 1.0);
 	this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[0].setSpecular(1.0, 1.0, 0.0, 1.0);
@@ -149,6 +169,12 @@ LightingScene.prototype.initLights = function() {
 	this.lights[2].setDiffuse(1.0, 1.0, 1.0, 1.0);
 	this.lights[2].setSpecular(1.0, 1.0, 1.0, 1.0);
 	this.lights[2].enable();
+
+	this.lights[3].setAmbient(0, 0, 0, 1);
+	this.lights[3].setDiffuse(1.0, 1.0, 1.0, 1.0);
+	this.lights[3].setSpecular(1.0, 1.0, 1.0, 1.0);
+	this.lights[3].setLinearAttenuation(0.5);
+	this.lights[3].enable();
 };
 
 LightingScene.prototype.updateLights = function() {
@@ -196,6 +222,13 @@ LightingScene.prototype.display = function() {
 	this.clock.display();
 	this.popMatrix();
 	
+	//Lamp Top
+	this.pushMatrix();
+	this.translate(7.5, 9.0, 7.5);
+	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.lampTop.display();
+	this.popMatrix();
+	
 	//Prism Top
 	this.pushMatrix();
 	this.translate(14.0, 8.0, 14.0);
@@ -212,13 +245,20 @@ LightingScene.prototype.display = function() {
 	this.cylinderTop.display();
 	this.popMatrix();
 	
-	this.gl.disable(this.gl.CULL_FACE);
+	//Lamp
+	this.pushMatrix();
+	this.translate(7.5, 9.0, 7.5);
+	this.rotate(Math.PI, 0, 0, 1);
+	this.lampAppearance.apply();
+	this.lamp.display();
+	this.popMatrix();
 	
 	//Prism
 	this.pushMatrix();
 	this.translate(14.0, 0.0, 14.0);
 	this.scale(1.0, 8.0, 1.0);
 	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.columnAppearance.apply();
 	this.prism.display();
 	this.popMatrix();
 	
@@ -227,10 +267,9 @@ LightingScene.prototype.display = function() {
 	this.translate(1.05, 0.0, 14.0);
 	this.scale(1.0, 8.0, 1.0);
 	this.rotate(Math.PI / 2, -1, 0, 0);
+	this.columnAppearance.apply();
 	this.cylinder.display();
 	this.popMatrix();
-
-	this.gl.enable(this.gl.CULL_FACE);
 	
 	//Floor
 	this.pushMatrix();
@@ -263,7 +302,7 @@ LightingScene.prototype.display = function() {
 	this.translate(5, 0, 8);
 	this.table.display();
 	this.popMatrix();
-
+	
 	this.gl.disable(this.gl.CULL_FACE);
 	
 	//Paper Plane

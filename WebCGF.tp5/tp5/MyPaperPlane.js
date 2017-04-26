@@ -16,13 +16,6 @@ function MyPaperPlane(scene) {
 	this.initBuffers();
 };
 
-/**
- * States
- * 0 - plane is flying towars the window wall
- * 1 - plane has hit the window wall and is falling
- * 2 - plane has hit the floor and stopped
- */
-
 MyPaperPlane.prototype = Object.create(CGFobject.prototype);
 MyPaperPlane.prototype.constructor = MyPaperPlane;
 
@@ -50,6 +43,13 @@ MyPaperPlane.prototype.initBuffers = function() {
 	this.primitiveType = this.scene.gl.TRIANGLES;
 	this.initGLBuffers();
 };
+
+/**
+ * States
+ * 0 - plane is flying towards the window wall
+ * 1 - plane has hit the window wall and is falling
+ * 2 - plane has hit the floor and stopped
+ */
 
 MyPaperPlane.prototype.update = function(currTime, updateFreq) {
 	

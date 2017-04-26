@@ -15,8 +15,9 @@ serialInclude([
 	'MyClock.js',
 	'MyClockHand.js',
 	'MyPaperPlane.js',
+	'MyLamp.js',
 
-	main=function() {
+	main = function() {
 		var app = new CGFapplication(document.body);
 		var myScene = new LightingScene();
 		var myInterface = new CGFinterface();

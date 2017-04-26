@@ -1,8 +1,8 @@
 /**
- * MyCylinder
+ * MyLamp
  * @constructor
  */
-function MyCylinder(scene, slices, stacks) {
+function MyLamp(scene, slices, stacks) {
 	CGFobject.call(this,scene);
 
 	this.slices = slices;
@@ -11,23 +11,24 @@ function MyCylinder(scene, slices, stacks) {
 	this.initBuffers();
 };
 
-MyCylinder.prototype = Object.create(CGFobject.prototype);
-MyCylinder.prototype.constructor = MyCylinder;
+MyLamp.prototype = Object.create(CGFobject.prototype);
+MyLamp.prototype.constructor = MyLamp;
 
-MyCylinder.prototype.initBuffers = function() {
+MyLamp.prototype.initBuffers = function() {
 
 	var vertices = [];
 	var normals = [];
 	var texCoords = [];
 	var indices = [];
-	var increment = 2 * Math.PI / this.slices;
-	var height_inc = 1.0 / this.stacks;
+	var phi_inc = 2 * Math.PI / this.slices;
+	var theta_inc = Math.PI / 2 / this.stacks;
 
+	//Repeats top vertex info for each slice
 	for(var i = 0; i <= this.slices; i++) {
 		for(var j = 0; j <= this.stacks; j++) {
-			vertices.push(Math.cos(increment * i), Math.sin(increment * i), height_inc * j);
-			normals.push(Math.cos(increment * i), Math.sin(increment * i), 0);
-			texCoords.push(i, 1 - j);
+			vertices.push(Math.sin(theta_inc * j) * Math.cos(phi_inc * i), Math.cos(theta_inc * j), Math.sin(theta_inc * j) * Math.sin(phi_inc * i));
+			normals.push(Math.sin(theta_inc * j) * Math.cos(phi_inc * i), Math.cos(theta_inc * j), Math.sin(theta_inc * j) * Math.sin(phi_inc * i));
+			texCoords.push(i, 1 -j);
 		}
 	}
 
