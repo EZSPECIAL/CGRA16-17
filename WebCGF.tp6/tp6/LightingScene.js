@@ -73,9 +73,18 @@ LightingScene.prototype.init = function(application) {
 	this.clockHandYellow.setShininess(32);
 	
 	//Interface options
-	this.option1 = true;
-	this.option2 = false;
-	this.speed = 3;
+	//Button
+	this.doClock = true;
+	
+	//Group
+	this.Light_1 = true;
+	this.Light_2 = true;
+	this.Light_3 = true;
+	this.Light_4 = true;
+	this.Light_5 = true;
+	
+	//Slider
+	//this.speed = 3;
 	
 	//Init update cycle
 	this.setUpdatePeriod(updateFreq);
@@ -142,17 +151,35 @@ LightingScene.prototype.initLights = function() {
 };
 
 LightingScene.prototype.updateLights = function() {
-	for (i = 0; i < this.lights.length; i++)
+	
+	var lightBool = [];
+	lightBool.push(this.Light_1);
+	lightBool.push(this.Light_2);
+	lightBool.push(this.Light_3);
+	lightBool.push(this.Light_4);
+	lightBool.push(this.Light_5);
+	
+	for (i = 0; i < this.lights.length; i++) {
+		
+		if(i < lightBool.length) {
+			this.lights[i].setVisible(lightBool[i]);
+			if(lightBool[i]) {
+				this.lights[i].enable();
+			} else this.lights[i].disable();
+		}
 		this.lights[i].update();
+	}
 };
 
 LightingScene.prototype.update = function(currTime) {
-	this.clock.update(currTime - previousTime, updateFreq);
+	if(this.doClock) {
+		this.clock.update(currTime - previousTime, updateFreq);
+	}
 	previousTime = currTime;
 };
 
-LightingScene.prototype.doSomething = function () {
-	console.log("Doing something...");
+LightingScene.prototype.Toggle_Clock = function () {
+	this.doClock = !this.doClock;
 };
 
 LightingScene.prototype.subRotateLeft = function() {

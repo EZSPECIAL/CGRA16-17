@@ -16,38 +16,37 @@ MyInterface.prototype.constructor = MyInterface;
  */
 MyInterface.prototype.init = function(application) {
 	
-	// call CGFinterface init
+	//Call CGFinterface init
 	CGFinterface.prototype.init.call(this, application);
 
-	// init GUI. For more information on the methods, check:
-	//  http://workshop.chromeexperiments.com/examples/gui
+	//Init GUI. For more information on the methods, check:
+	//http://workshop.chromeexperiments.com/examples/gui
 
 	this.gui = new dat.GUI();
+	
+	//GUI Button for controlling clock animation
+	
+	this.gui.add(this.scene, 'Toggle_Clock');	
 
-	// add a button:
-	// the first parameter is the object that is being controlled (in this case the scene)
-	// the identifier 'doSomething' must be a function declared as part of that object (i.e. a member of the scene class)
-	// e.g. LightingScene.prototype.doSomething = function () { console.log("Doing something..."); }; 
-
-	this.gui.add(this.scene, 'doSomething');	
-
-	// add a group of controls (and open/expand by defult)
-
-	var group = this.gui.addFolder("Options");
+	//GUI Group to control lights
+	
+	var group = this.gui.addFolder("Lights");
 	group.open();
+	
+	//Scene member variables
+	
+	group.add(this.scene, 'Light_1');
+	group.add(this.scene, 'Light_2');
+	group.add(this.scene, 'Light_3');
+	group.add(this.scene, 'Light_4');
+	group.add(this.scene, 'Light_5');
 
-	// add two check boxes to the group. The identifiers must be members variables of the scene initialized in scene.init as boolean
-	// e.g. this.option1=true; this.option2=false;
+	//Add a slider
+	//Must be a numeric variable of the scene, initialized in scene.init e.g.
+	//this.speed=3;
+	//min and max values can be specified as parameters
 
-	group.add(this.scene, 'option1');
-	group.add(this.scene, 'option2');
-
-	// add a slider
-	// must be a numeric variable of the scene, initialized in scene.init e.g.
-	// this.speed=3;
-	// min and max values can be specified as parameters
-
-	this.gui.add(this.scene, 'speed', -5, 5);
+	//this.gui.add(this.scene, 'speed', -5, 5);
 
 	return true;
 };
@@ -58,9 +57,6 @@ MyInterface.prototype.init = function(application) {
  */
 MyInterface.prototype.processKeyboard = function(event) {
 	
-	// call CGFinterface default code (omit if you want to override)
-	//CGFinterface.prototype.processKeyboard.call(this, event);
-
 	var keyCode = event.which || event.keyCode;
 
 	switch (keyCode) {
@@ -85,4 +81,12 @@ MyInterface.prototype.processKeyboard = function(event) {
 		this.scene.subBackward();
 	break;
 	};
+};
+
+MyInterface.prototype.processKeyUp = function(event) {
+	//stub
+};
+
+MyInterface.prototype.processKeyDown = function(event) {
+	//stub
 };
