@@ -5,7 +5,7 @@ var updateFreq = 1 / 30.0; //30 FPS
 
 function LightingScene() {
 	CGFscene.call(this);
-}
+};
 
 LightingScene.prototype = Object.create(CGFscene.prototype);
 LightingScene.prototype.constructor = LightingScene;
@@ -153,7 +153,23 @@ LightingScene.prototype.update = function(currTime) {
 
 LightingScene.prototype.doSomething = function () {
 	console.log("Doing something...");
-}
+};
+
+LightingScene.prototype.subRotateLeft = function() {
+	this.submarine.rotateLeft();
+};
+
+LightingScene.prototype.subRotateRight = function() {
+	this.submarine.rotateRight();
+};
+
+LightingScene.prototype.subForward = function() {
+	this.submarine.forward();
+};
+
+LightingScene.prototype.subBackward = function() {
+	this.submarine.backward();
+};
 
 LightingScene.prototype.display = function() {
 	
@@ -183,8 +199,8 @@ LightingScene.prototype.display = function() {
 	
 	//Submarine
 	this.pushMatrix();
-	this.translate(8.0, 4.0, 8.0);
-	this.rotate(Math.PI, 0, 1, 0);
+	this.translate(this.submarine.getCoords()[0], this.submarine.getCoords()[1], this.submarine.getCoords()[2]);
+	this.rotate(Math.PI + this.submarine.getAngle(), 0, 1, 0);
 	this.translate(0.0, 0.0, -1.0);
 	this.submarine.display();
 	this.popMatrix();
@@ -213,6 +229,14 @@ LightingScene.prototype.display = function() {
 	this.cylinderTop.display();
 	this.popMatrix();
 
+	//Cylinder Bottom
+	this.pushMatrix();
+	this.translate(8.0, 0.0, -0.5);
+	this.scale(0.5, 8.0, 0.5);
+	this.rotate(Math.PI / 2, 1, 0, 0);
+	this.cylinderTop.display();
+	this.popMatrix();
+	
 	//Cylinder
 	this.pushMatrix();
 	this.translate(8.0, 0.0, -0.5);
