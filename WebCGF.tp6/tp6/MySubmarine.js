@@ -14,10 +14,15 @@ function MySubmarine(scene) {
 	this.trap = new MyTrap(this.scene, 0, 1, 0, 1);
 	this.cube = new MyUnitCubeQuad(this.scene);
 	
-	this.angle = 0;
+	this.yaw = 0;
+	this.propellerAngle = 0.0;
+	this.pscopeHeight = 0.75;
 	this.coords = vec3.fromValues(8.0, 4.0, 8.0);
-	this.turningMult = 2.0; //Turning multiplier, 1.0 equals 1°
-	this.moveMult = 0.25; //Movement multiplier
+	this.turningMult = 2.0; //Turning multiplier, 1.0 equals 1° per keypress
+	this.moveMult = 1.0; //Movement speed in units/second
+	this.elevSpeed = 0.5; //Vertical movement speed
+	this.state = {noAnim: 0, turnLeft: 1, turnRight: 2, upwards: 3, downwards: 4, pUp: 5, pDown: 6};
+	this.currState = this.state.noAnim;
 };
 
 MySubmarine.prototype = Object.create(CGFobject.prototype);
@@ -42,10 +47,10 @@ MySubmarine.prototype.display = function() {
 	var topCylD = 0.55;
 	
 	var pscopeTowerW = topCylW * 0.10;
-	var pscopeTowerH = topCylH * 0.85;
+	var pscopeTowerH = topCylH * this.pscopeHeight;
 	var pscopeTowerD = topCylD * 0.10;
 	
-	var pscopeScopeW = pscopeTowerH * 0.15;
+	var pscopeScopeW = topCylH * 0.75 * 0.15; //0.75 = max pscopeHeight
 	var pscopeScopeH = pscopeTowerW;
 	var pscopeScopeD = pscopeTowerD;
 	
@@ -81,7 +86,7 @@ MySubmarine.prototype.display = function() {
 	
 	this.scene.pushMatrix();
 	this.scene.translate(this.coords[0], this.coords[1], this.coords[2]);
-	this.scene.rotate(-Math.PI / 2.0 + this.angle, 0, 1, 0);
+	this.scene.rotate(-Math.PI / 2.0 + this.yaw, 0, 1, 0);
 	
 	/**
 	 * Submarine body
@@ -183,6 +188,11 @@ MySubmarine.prototype.display = function() {
 	//Top cylinder diving plane
 	this.scene.pushMatrix();
 	this.scene.translate(-topCylW / 2.0 - topDPlaneW / 2.0, topCylH / 2.0 + bodyCylH / 2.0 + topDPlaneH / 2.0, 0.0);
+	if(this.currState == this.state.upwards) {
+		this.scene.rotate(-Math.PI / 6, 0, 0, 1);
+	} else if(this.currState == this.state.downwards) {
+		this.scene.rotate(Math.PI / 6, 0, 0, 1);
+	}
 	this.scene.scale(topDPlaneW, topDPlaneH, topDPlaneD);
 	//Centering
 	this.scene.rotate(Math.PI / 2, 0, 1, 0);
@@ -193,6 +203,11 @@ MySubmarine.prototype.display = function() {
 	//Back diving plane
 	this.scene.pushMatrix();
 	this.scene.translate(bodyCylW / 2.0 + backDPlaneW / 2.0, 0.0, 0.0);
+	if(this.currState == this.state.upwards) {
+		this.scene.rotate(-Math.PI / 6, 0, 0, 1);
+	} else if(this.currState == this.state.downwards) {
+		this.scene.rotate(Math.PI / 6, 0, 0, 1);
+	}
 	this.scene.scale(backDPlaneW, backDPlaneH, backDPlaneD);
 	//Centering
 	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
@@ -203,6 +218,13 @@ MySubmarine.prototype.display = function() {
 	//Rudder
 	this.scene.pushMatrix();
 	this.scene.translate(bodyCylW / 2.0 + rudderW / 2.0, 0.0, 0.0);
+	if(this.moveMult != 0) {
+		if(this.currState == this.state.turnLeft) {
+			this.scene.rotate(-Math.PI / 6, 0, 1, 0);
+		} else if(this.currState == this.state.turnRight) {
+			this.scene.rotate(Math.PI / 6, 0, 1, 0);
+		}
+	}
 	this.scene.scale(rudderW, rudderH, rudderD);
 	//Centering
 	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
@@ -240,13 +262,7 @@ MySubmarine.prototype.display = function() {
 	//Propeller prism #1
 	this.scene.pushMatrix();
 	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, bodyCylD + propellerD - propellerAdjust);
-	this.scene.scale(propellerPrismW, propellerPrismH, propellerPrismD);
-	this.cube.display();
-	this.scene.popMatrix();
-	
-	//Propeller prism #2
-	this.scene.pushMatrix();
-	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, -bodyCylD - propellerD + propellerAdjust);
+	this.scene.rotate(this.propellerAngle, 1, 0, 0);
 	this.scene.scale(propellerPrismW, propellerPrismH, propellerPrismD);
 	this.cube.display();
 	this.scene.popMatrix();
@@ -270,6 +286,14 @@ MySubmarine.prototype.display = function() {
 	this.circle.display();
 	this.scene.popMatrix();
 	
+	//Propeller prism #2
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, -bodyCylD - propellerD + propellerAdjust);
+	this.scene.rotate(-this.propellerAngle, 1, 0, 0);
+	this.scene.scale(propellerPrismW, propellerPrismH, propellerPrismD);
+	this.cube.display();
+	this.scene.popMatrix();
+
 	//Propeller sphere #2
 	this.scene.pushMatrix();
 	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0 + propellerPrismW / 2.0, -backDPlaneH - propellerH + propellerPrismH / 2.0, -bodyCylD - propellerD + propellerAdjust);
@@ -293,23 +317,55 @@ MySubmarine.prototype.display = function() {
 };
 
 MySubmarine.prototype.rotateLeft = function() {
-	this.angle += this.turningMult * Math.PI / 180.0;
-	if(this.angle > 2 * Math.PI) {
-		this.angle -= 2 * Math.PI;
+	
+	if(Math.abs(this.moveMult) > 0) {
+		this.yaw += this.turningMult * Math.PI / 180.0;
+		if(this.yaw > 2 * Math.PI) {
+			this.yaw -= 2 * Math.PI;
+		}
 	}
 };
 
 MySubmarine.prototype.rotateRight = function() {
-	this.angle -= this.turningMult * Math.PI / 180.0;
-	if(this.angle < -2 * Math.PI) {
-		this.angle += 2 * Math.PI;
+	
+	if(Math.abs(this.moveMult) > 0) {
+		this.yaw -= this.turningMult * Math.PI / 180.0;
+		if(this.yaw < -2 * Math.PI) {
+			this.yaw += 2 * Math.PI;
+		}
 	}
 };
 
 MySubmarine.prototype.forward = function() {
-	this.coords = vec3.fromValues(this.coords[0] - this.moveMult * Math.sin(this.angle), this.coords[1], this.coords[2] - this.moveMult * Math.cos(this.angle));
+	this.moveMult += 0.5;
+	this.moveMult = this.scene.clamp(this.moveMult, -3.0, 3.0);
 };
 
 MySubmarine.prototype.backward = function() {
-	this.coords = vec3.fromValues(this.coords[0] + this.moveMult * Math.sin(this.angle), this.coords[1], this.coords[2] + this.moveMult * Math.cos(this.angle));
+	this.moveMult -= 0.5;
+	this.moveMult = this.scene.clamp(this.moveMult, -3.0, 3.0);
+};
+
+MySubmarine.prototype.updateMovement = function(dTime, updateFreq) {
+	if(dTime < updateFreq + 100) {
+		this.coords[0] += -this.moveMult * Math.sin(this.yaw) * dTime;
+		if(this.currState == this.state.upwards) {
+			this.coords[1] += this.elevSpeed * dTime;
+		} else if(this.currState == this.state.downwards) {
+			this.coords[1] -= this.elevSpeed * dTime;
+		}
+		this.coords[2] += -this.moveMult * Math.cos(this.yaw) * dTime;
+		
+		this.propellerAngle += 2 * Math.abs(this.moveMult) * 2 * Math.PI * dTime; //Min speed is 0.5 units/s so 2 * this.moveMult gives 1 rotation per second at min
+		if(this.currState == this.state.pUp) {
+			this.pscopeHeight += this.elevSpeed * dTime;
+		} else if(this.currState == this.state.pDown) {
+			this.pscopeHeight -= this.elevSpeed * dTime;
+		}
+		this.pscopeHeight = this.scene.clamp(this.pscopeHeight, 0.10, 0.75); //Limits for periscope
+	}
+};
+
+MySubmarine.prototype.stateM = function(event) {
+	this.currState = event;
 };

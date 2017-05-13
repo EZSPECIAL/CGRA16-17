@@ -4,7 +4,10 @@
  */
 
 function MyInterface() {
+	
 	CGFinterface.call(this);
+	
+	this.state = {noAnim: 0, turnLeft: 1, turnRight: 2, upwards: 3, downwards: 4, pUp: 5, pDown: 6};
 };
 
 MyInterface.prototype = Object.create(CGFinterface.prototype);
@@ -42,9 +45,6 @@ MyInterface.prototype.init = function(application) {
 	//GUI Dropdown box to control submarine texture
 	this.gui.add(this.scene, 'currSubmarineAppearance', this.scene.submarineAppearanceList);
 	
-	//Add a slider
-	//this.gui.add(this.scene, 'speed', -5, 5);
-
 	return true;
 };
 
@@ -81,9 +81,77 @@ MyInterface.prototype.processKeyboard = function(event) {
 };
 
 MyInterface.prototype.processKeyUp = function(event) {
-	//stub
+	
+	var keyCode = event.which || event.keyCode;
+
+	switch (keyCode) {
+	//a or A
+	case (65):
+	case (97):
+		this.scene.subEventNotify(this.state.noAnim);
+	break;
+	//d or D
+	case (68):
+	case (100):
+		this.scene.subEventNotify(this.state.noAnim);
+	break;
+	//l or L
+	case (76):
+	case (108):
+		this.scene.subEventNotify(this.state.noAnim);
+	break;
+	//p or P
+	case (80):
+	case (112):
+		this.scene.subEventNotify(this.state.noAnim);
+	break;
+	//q or Q
+	case (81):
+	case (113):
+		this.scene.subEventNotify(this.state.noAnim);
+	break;
+	//e or E
+	case (69):
+	case (101):
+		this.scene.subEventNotify(this.state.noAnim);
+	break;
+	};
 };
 
 MyInterface.prototype.processKeyDown = function(event) {
-	//stub
+	
+	var keyCode = event.which || event.keyCode;
+
+	switch (keyCode) {
+	//a or A
+	case (65):
+	case (97):
+		this.scene.subEventNotify(this.state.turnLeft);
+	break;
+	//d or D
+	case (68):
+	case (100):
+		this.scene.subEventNotify(this.state.turnRight);
+	break;
+	//l or L
+	case (76):
+	case (108):
+		this.scene.subEventNotify(this.state.pDown);
+	break;
+	//p or P
+	case (80):
+	case (112):
+		this.scene.subEventNotify(this.state.pUp);
+	break;
+	//q or Q
+	case (81):
+	case (113):
+		this.scene.subEventNotify(this.state.upwards);
+	break;
+	//e or E
+	case (69):
+	case (101):
+		this.scene.subEventNotify(this.state.downwards);
+	break;
+	};
 };

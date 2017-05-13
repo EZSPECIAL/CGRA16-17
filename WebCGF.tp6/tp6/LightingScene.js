@@ -1,7 +1,7 @@
 var degToRad = Math.PI / 180.0;
 
 var previousTime = 0;
-var updateFreq = 1 / 30.0; //30 FPS
+var updateFreq = 16.67; //60 FPS
 
 function LightingScene() {
 	CGFscene.call(this);
@@ -107,9 +107,6 @@ LightingScene.prototype.init = function(application) {
 	this.submarineAppearanceList = {Default: 0, Metal: 1, Camo: 2};
 	this.currSubmarineAppearance = 0;
 	
-	//Slider
-	//this.speed = 3;
-	
 	//Init update cycle
 	this.setUpdatePeriod(updateFreq);
 };
@@ -199,6 +196,7 @@ LightingScene.prototype.update = function(currTime) {
 	if(this.doClock) {
 		this.clock.update(currTime - previousTime, updateFreq);
 	}
+	this.submarine.updateMovement((currTime - previousTime) / 1000.0, updateFreq);
 	previousTime = currTime;
 };
 
@@ -220,6 +218,10 @@ LightingScene.prototype.subForward = function() {
 
 LightingScene.prototype.subBackward = function() {
 	this.submarine.backward();
+};
+
+LightingScene.prototype.subEventNotify = function(event) {
+	this.submarine.stateM(event);
 };
 
 LightingScene.prototype.display = function() {
@@ -305,4 +307,8 @@ LightingScene.prototype.display = function() {
 	this.popMatrix();
 
 	// ---- END Primitive drawing section
+};
+
+LightingScene.prototype.clamp = function(x, minVal, maxVal) {
+	return Math.min(Math.max(x, minVal), maxVal);
 };
