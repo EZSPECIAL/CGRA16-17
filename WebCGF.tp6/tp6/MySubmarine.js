@@ -8,31 +8,288 @@ function MySubmarine(scene) {
 	
 	CGFobject.call(this, scene);
 	
+	this.cylinder = new MyCylinder(this.scene, 20, 20);
+	this.hemiSphere = new MyLamp(this.scene, 20, 20);
+	this.circle = new MyCircle(this.scene, 20, 20);
+	this.trap = new MyTrap(this.scene, 0, 1, 0, 1);
+	this.cube = new MyUnitCubeQuad(this.scene);
+	
 	this.angle = 0;
 	this.coords = vec3.fromValues(8.0, 4.0, 8.0);
 	this.turningMult = 2.0; //Turning multiplier, 1.0 equals 1°
 	this.moveMult = 0.25; //Movement multiplier
-	
-	this.initBuffers();
 };
 
 MySubmarine.prototype = Object.create(CGFobject.prototype);
 MySubmarine.prototype.constructor = MySubmarine;
 
-MySubmarine.prototype.initBuffers = function() {
+MySubmarine.prototype.display = function() {
 	
-	this.vertices = [ 0.5, 0.3, 0.0,
-					  -0.5, 0.3, 0.0,
-					  0.0, 0.3, 2.0 ];
+	/**
+	 * Submarine constants for size
+	 */
 
-	this.normals = [ 0, 1, 0,
-		             0, 1, 0,
-		             0, 1, 0 ];
+	var bodyCylW = 6.00;
+	var bodyCylH = 1.20;
+	var bodyCylD = 0.75;
+	
+	var bodySphereW = 1.10;
+	var bodySphereH = 1.20;
+	var bodySphereD = 0.75;
+	
+	var topCylW = 0.75;
+	var topCylH = 1.80;
+	var topCylD = 0.55;
+	
+	var pscopeTowerW = topCylW * 0.10;
+	var pscopeTowerH = topCylH * 0.85;
+	var pscopeTowerD = topCylD * 0.10;
+	
+	var pscopeScopeW = pscopeTowerH * 0.15;
+	var pscopeScopeH = pscopeTowerW;
+	var pscopeScopeD = pscopeTowerD;
+	
+	var topDPlaneW = 0.60;
+	var topDPlaneH = 0.15;
+	var topDPlaneD = 2.00;
+	
+	var backDPlaneW = 0.60;
+	var backDPlaneH = 0.15;
+	var backDPlaneD = 3.00;
+	
+	var rudderW = 0.60;
+	var rudderH = backDPlaneD * (2.25 / 1.80);
+	var rudderD = 0.15;
+	
+	var propellerW = 0.40;
+	var propellerH = 0.35;
+	var propellerD = 0.35;
+	
+	var propellerPrismW = 0.070;
+	var propellerPrismH = 0.070;
+	var propellerPrismD = propellerD * 1.95;
+	
+	var propellerSphereW = 0.070;
+	var propellerSphereH = propellerPrismH;
+	var propellerSphereD = propellerPrismH;
 
-	this.indices = [ 0, 1, 2 ];
-		
-	this.primitiveType = this.scene.gl.TRIANGLES;
-	this.initGLBuffers();
+	var propellerAdjust = 0.05;
+	
+	/**
+	 * Submarine position control
+	 */
+	
+	this.scene.pushMatrix();
+	this.scene.translate(this.coords[0], this.coords[1], this.coords[2]);
+	this.scene.rotate(-Math.PI / 2.0 + this.angle, 0, 1, 0);
+	
+	/**
+	 * Submarine body
+	 */
+	
+	//Body cylinder
+	this.scene.pushMatrix();
+	this.scene.scale(bodyCylW, bodyCylH, bodyCylD);
+	//Centering
+	this.scene.translate(-0.5, 0.0, 0.0);
+	this.scene.rotate(Math.PI / 2, 0, 1, 0);
+	this.cylinder.display();
+	this.scene.popMatrix();
+	
+	//Body hemispheres
+	this.scene.pushMatrix();
+	this.scene.translate(-bodyCylW / 2.0 - bodySphereW / 2.0, 0.0, 0.0);
+	this.scene.scale(bodySphereW, bodySphereH, bodySphereD);
+	//Centering
+	this.scene.translate(0.5, 0.0, 0.0);
+	this.scene.rotate(Math.PI / 2, 0, 0, 1);
+	this.hemiSphere.display();
+	this.scene.popMatrix();
+	
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 + bodySphereW / 2.0, 0.0, 0.0);
+	this.scene.scale(bodySphereW, bodySphereH, bodySphereD);
+	//Centering
+	this.scene.translate(-0.5, 0.0, 0.0);
+	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
+	this.hemiSphere.display();
+	this.scene.popMatrix();
+	
+	//Top cylinder
+	this.scene.pushMatrix();
+	this.scene.translate(-topCylW, bodyCylH, 0.0);
+	this.scene.scale(topCylW, topCylH, topCylD);
+	//Centering
+	this.scene.translate(0.0, -0.5, 0.0);
+	this.scene.rotate(Math.PI / 2, -1, 0, 0);
+	this.cylinder.display();
+	this.scene.popMatrix();
+	
+	//Top cylinder lid
+	this.scene.pushMatrix();
+	this.scene.translate(-topCylW, bodyCylH + topCylH / 2.0, 0.0);
+	this.scene.scale(topCylW, topCylH, topCylD);
+	//Centering
+	this.scene.rotate(Math.PI / 2, -1, 0, 0);
+	this.circle.display();
+	this.scene.popMatrix();
+	
+	/**
+	 * Submarine periscope
+	 */
+	
+	//Periscope tower
+	this.scene.pushMatrix();
+	this.scene.translate(pscopeTowerW / 2.0 - 1.50 * topCylW, pscopeTowerH / 2.0 + bodyCylH + topCylH / 2.0, 0.0);
+	this.scene.scale(pscopeTowerW, pscopeTowerH, pscopeTowerD);
+	//Centering
+	this.scene.translate(0.0, -0.5, 0.0);
+	this.scene.rotate(Math.PI / 2, -1, 0, 0);
+	this.cylinder.display();
+	this.scene.popMatrix();
+	
+	//Periscope tower lid
+	this.scene.pushMatrix();
+	this.scene.translate(pscopeTowerW / 2.0 - 1.50 * topCylW, pscopeTowerH + bodyCylH + topCylH / 2.0, 0.0);
+	this.scene.scale(pscopeTowerW, pscopeTowerH, pscopeTowerD);
+	//Centering
+	this.scene.rotate(Math.PI / 2, -1, 0, 0);
+	this.circle.display();
+	this.scene.popMatrix();
+	
+	//Periscope tower scope
+	this.scene.pushMatrix();
+	this.scene.translate(-pscopeScopeW / 2.0 + pscopeTowerW / 2.0 - 1.50 * topCylW, -pscopeScopeH + bodyCylH + topCylH / 2.0 + pscopeTowerH, 0.0);
+	this.scene.scale(pscopeScopeW, pscopeScopeH, pscopeScopeD);
+	//Centering
+	this.scene.translate(0.5, 0.0, 0.0);
+	this.scene.rotate(Math.PI / 2, 0, -1, 0);
+	this.cylinder.display();
+	this.scene.popMatrix();
+	
+	//Periscope scope lid
+	this.scene.pushMatrix();
+	this.scene.translate(-pscopeScopeW + pscopeTowerW / 2.0 - 1.50 * topCylW, -pscopeScopeH + bodyCylH + topCylH / 2.0 + pscopeTowerH, 0.0);
+	this.scene.scale(pscopeScopeW, pscopeScopeH, pscopeScopeD);
+	//Centering
+	this.scene.rotate(Math.PI / 2, 0, -1, 0);
+	this.circle.display();
+	this.scene.popMatrix();
+	
+	/**
+	 * Submarine diving planes / Rudder
+	 */
+	
+	//Top cylinder diving plane
+	this.scene.pushMatrix();
+	this.scene.translate(-topCylW / 2.0 - topDPlaneW / 2.0, topCylH / 2.0 + bodyCylH / 2.0 + topDPlaneH / 2.0, 0.0);
+	this.scene.scale(topDPlaneW, topDPlaneH, topDPlaneD);
+	//Centering
+	this.scene.rotate(Math.PI / 2, 0, 1, 0);
+	this.scene.rotate(-Math.PI / 2, 1, 0, 0);
+	this.trap.display();
+	this.scene.popMatrix();
+	
+	//Back diving plane
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 + backDPlaneW / 2.0, 0.0, 0.0);
+	this.scene.scale(backDPlaneW, backDPlaneH, backDPlaneD);
+	//Centering
+	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
+	this.scene.rotate(-Math.PI / 2, 0, 1, 0);
+	this.trap.display();
+	this.scene.popMatrix();
+	
+	//Rudder
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 + rudderW / 2.0, 0.0, 0.0);
+	this.scene.scale(rudderW, rudderH, rudderD);
+	//Centering
+	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
+	this.trap.display();
+	this.scene.popMatrix();
+	
+	/**
+	 * Submarine propeller
+	 */
+	
+	this.scene.gl.disable(this.scene.gl.CULL_FACE);
+	
+	//Propeller cylinder #1
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, bodyCylD + propellerD - propellerAdjust);
+	this.scene.scale(propellerW, propellerH, propellerD);
+	//Centering
+	this.scene.rotate(Math.PI / 2, 0, 1, 0);
+	this.scene.translate(0.0, 0.0, -0.5);
+	this.cylinder.display();
+	this.scene.popMatrix();
+	
+	//Propeller cylinder #2
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, -bodyCylD - propellerD + propellerAdjust);
+	this.scene.scale(propellerW, propellerH, propellerD);
+	//Centering
+	this.scene.rotate(Math.PI / 2, 0, 1, 0);
+	this.scene.translate(0.0, 0.0, -0.5);
+	this.cylinder.display();
+	this.scene.popMatrix();
+	
+	this.scene.gl.enable(this.scene.gl.CULL_FACE);
+	
+	//Propeller prism #1
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, bodyCylD + propellerD - propellerAdjust);
+	this.scene.scale(propellerPrismW, propellerPrismH, propellerPrismD);
+	this.cube.display();
+	this.scene.popMatrix();
+	
+	//Propeller prism #2
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0, -backDPlaneH - propellerH, -bodyCylD - propellerD + propellerAdjust);
+	this.scene.scale(propellerPrismW, propellerPrismH, propellerPrismD);
+	this.cube.display();
+	this.scene.popMatrix();
+	
+	//Propeller sphere #1
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0 + propellerPrismW / 2.0, -backDPlaneH - propellerH + propellerPrismH / 2.0, bodyCylD + propellerD - propellerAdjust);
+	this.scene.scale(propellerSphereW, propellerSphereH, propellerSphereD);
+	//Centering
+	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
+	this.scene.translate(0.5, 0.0, 0.0);
+	this.hemiSphere.display();
+	this.scene.popMatrix();
+	
+	//Propeller sphere lid #1
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0 + propellerPrismW / 2.0, -backDPlaneH - propellerH, bodyCylD + propellerD - propellerAdjust);
+	this.scene.scale(propellerSphereW, propellerSphereH, propellerSphereD);
+	//Centering
+	this.scene.rotate(-Math.PI / 2, 0, 1, 0);
+	this.circle.display();
+	this.scene.popMatrix();
+	
+	//Propeller sphere #2
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0 + propellerPrismW / 2.0, -backDPlaneH - propellerH + propellerPrismH / 2.0, -bodyCylD - propellerD + propellerAdjust);
+	this.scene.scale(propellerSphereW, propellerSphereH, propellerSphereD);
+	//Centering
+	this.scene.rotate(-Math.PI / 2, 0, 0, 1);
+	this.scene.translate(0.5, 0.0, 0.0);
+	this.hemiSphere.display();
+	this.scene.popMatrix();
+	
+	//Propeller sphere lid #2
+	this.scene.pushMatrix();
+	this.scene.translate(bodyCylW / 2.0 - propellerW / 2.0 + propellerPrismW / 2.0, -backDPlaneH - propellerH, -bodyCylD - propellerD + propellerAdjust);
+	this.scene.scale(propellerSphereW, propellerSphereH, propellerSphereD);
+	//Centering
+	this.scene.rotate(-Math.PI / 2, 0, 1, 0);
+	this.circle.display();
+	this.scene.popMatrix();
+	
+	this.scene.popMatrix();
 };
 
 MySubmarine.prototype.rotateLeft = function() {
@@ -55,12 +312,4 @@ MySubmarine.prototype.forward = function() {
 
 MySubmarine.prototype.backward = function() {
 	this.coords = vec3.fromValues(this.coords[0] + this.moveMult * Math.sin(this.angle), this.coords[1], this.coords[2] + this.moveMult * Math.cos(this.angle));
-};
-
-MySubmarine.prototype.getAngle = function() {
-	return this.angle;
-};
-
-MySubmarine.prototype.getCoords = function() {
-	return this.coords;
 };

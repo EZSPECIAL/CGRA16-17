@@ -34,6 +34,21 @@ LightingScene.prototype.init = function(application) {
 	this.clock = new MyClock(this);
 	this.clockBack = new MyCircle(this, 12);
 	this.submarine = new MySubmarine(this);
+
+	// Materials
+	this.materialDefault = new CGFappearance(this);
+	
+	this.clockHandBlack = new CGFappearance(this);
+	this.clockHandBlack.setAmbient(0.0, 0.0, 0.0, 1.0);
+	this.clockHandBlack.setDiffuse(0.01, 0.01, 0.01, 1.0);
+	this.clockHandBlack.setSpecular(0.50, 0.50, 0.50, 1.0);
+	this.clockHandBlack.setShininess(32);
+	
+	this.clockHandYellow = new CGFappearance(this);
+	this.clockHandYellow.setAmbient(0.0, 0.0, 0.0, 1.0);
+	this.clockHandYellow.setDiffuse(0.5, 0.5, 0.0, 1.0);
+	this.clockHandYellow.setSpecular(0.60, 0.60, 0.50, 1.0);
+	this.clockHandYellow.setShininess(32);
 	
 	//Textures
 	this.floorAppearance = new CGFappearance(this);
@@ -57,20 +72,25 @@ LightingScene.prototype.init = function(application) {
 	this.columnAppearance.setShininess(120);
 	this.columnAppearance.loadTexture("../resources/images/marble.jpg");
 	
-	// Materials
-	this.materialDefault = new CGFappearance(this);
+	this.submarineAppearances = [];
 	
-	this.clockHandBlack = new CGFappearance(this);
-	this.clockHandBlack.setAmbient(0.0, 0.0, 0.0, 1.0);
-	this.clockHandBlack.setDiffuse(0.01, 0.01, 0.01, 1.0);
-	this.clockHandBlack.setSpecular(0.50, 0.50, 0.50, 1.0);
-	this.clockHandBlack.setShininess(32);
+	this.subMetal = new CGFappearance(this);
+	this.subMetal.setAmbient(0.3, 0.3, 0.3, 1.0);
+	this.subMetal.setDiffuse(0.4, 0.4, 0.4, 1.0);
+	this.subMetal.setSpecular(0.55, 0.55, 0.55, 1.0);
+	this.subMetal.setShininess(120);
+	this.subMetal.loadTexture("../resources/images/metal.jpg");
 	
-	this.clockHandYellow = new CGFappearance(this);
-	this.clockHandYellow.setAmbient(0.0, 0.0, 0.0, 1.0);
-	this.clockHandYellow.setDiffuse(0.5, 0.5, 0.0, 1.0);
-	this.clockHandYellow.setSpecular(0.60, 0.60, 0.50, 1.0);
-	this.clockHandYellow.setShininess(32);
+	this.subCamo = new CGFappearance(this);
+	this.subCamo.setAmbient(0.3, 0.3, 0.3, 1.0);
+	this.subCamo.setDiffuse(0.55, 0.55, 0.55, 1.0);
+	this.subCamo.setSpecular(0.25, 0.25, 0.25, 1.0);
+	this.subCamo.setShininess(20);
+	this.subCamo.loadTexture("../resources/images/camo.png");
+	
+	this.submarineAppearances.push(this.materialDefault);
+	this.submarineAppearances.push(this.subMetal);
+	this.submarineAppearances.push(this.subCamo);
 	
 	//Interface options
 	//Button
@@ -82,6 +102,10 @@ LightingScene.prototype.init = function(application) {
 	this.Light_3 = true;
 	this.Light_4 = true;
 	this.Light_5 = true;
+	
+	//Dropdown
+	this.submarineAppearanceList = {Default: 0, Metal: 1, Camo: 2};
+	this.currSubmarineAppearance = 0;
 	
 	//Slider
 	//this.speed = 3;
@@ -226,12 +250,10 @@ LightingScene.prototype.display = function() {
 	
 	//Submarine
 	this.pushMatrix();
-	this.translate(this.submarine.getCoords()[0], this.submarine.getCoords()[1], this.submarine.getCoords()[2]);
-	this.rotate(Math.PI + this.submarine.getAngle(), 0, 1, 0);
-	this.translate(0.0, 0.0, -1.0);
+	this.submarineAppearances[this.currSubmarineAppearance].apply();
 	this.submarine.display();
 	this.popMatrix();
-
+	
 	//Clock
 	this.pushMatrix();
 	this.translate(8.0, 5.0, 0.0);

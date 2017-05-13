@@ -33,19 +33,16 @@ MyInterface.prototype.init = function(application) {
 	var group = this.gui.addFolder("Lights");
 	group.open();
 	
-	//Scene member variables
-	
 	group.add(this.scene, 'Light_1');
 	group.add(this.scene, 'Light_2');
 	group.add(this.scene, 'Light_3');
 	group.add(this.scene, 'Light_4');
 	group.add(this.scene, 'Light_5');
 
+	//GUI Dropdown box to control submarine texture
+	this.gui.add(this.scene, 'currSubmarineAppearance', this.scene.submarineAppearanceList);
+	
 	//Add a slider
-	//Must be a numeric variable of the scene, initialized in scene.init e.g.
-	//this.speed=3;
-	//min and max values can be specified as parameters
-
 	//this.gui.add(this.scene, 'speed', -5, 5);
 
 	return true;
