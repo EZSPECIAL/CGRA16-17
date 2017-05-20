@@ -1,17 +1,23 @@
 /**
  * MyClock
- * @constructor
+ *
+ * Constructs a clock with hands for hours, minutes and seconds.
+ *
+ * @see        MyCylinder
+ * @see        MyCircle
+ * @see        MyClockHand
  */
-
 function MyClock(scene) {
 	
 	CGFobject.call(this, scene);
+	
 	this.clock = new MyCylinder(this.scene, 12, 1);
 	this.clockTop = new MyCircle(this.scene, 12);
 	this.clockSeconds = new MyClockHand(this.scene);
 	this.clockMinutes = new MyClockHand(this.scene);
 	this.clockHours = new MyClockHand(this.scene);
 	
+	//Get current time and initialize clock hands to corresponding angles
 	var currDate = new Date(); 
 	
 	this.clockSeconds.setAngle(currDate.getSeconds() * 1.0 / 60.0 * 360.0);
@@ -59,17 +65,23 @@ MyClock.prototype.display = function() {
 	this.clockHours.display();
 	this.scene.popMatrix();
 	
-	this.scene.materialDefault.apply();
+	this.scene.materialDefault.apply(); //Force default material
 	
 	//Clock cylinder
 	this.clock.display();
 };
 
-MyClock.prototype.update = function(currTime, updateFreq) {
+/**
+ * Updates clock hands according to time since last update.
+ *
+ * @param      {number}  dTime       Microseconds between updates.
+ * @param      {number}  updateFreq  Frequency of update. (microseconds)
+ */
+MyClock.prototype.update = function(dTime, updateFreq) {
 	
-	if(currTime < updateFreq + 100) { //Remove very high values
-		this.clockSeconds.setAngle(this.clockSeconds.getAngle() + 1.0 / 60.0 * 360.0 * (currTime / 1000));
-		this.clockMinutes.setAngle(this.clockMinutes.getAngle() + 1.0 / 60.0 / 60.0 * 360.0 * (currTime / 1000));
-		this.clockHours.setAngle(this.clockHours.getAngle() + 1.0 / 60.0 / 60.0 / 12.0 * 360.0 * (currTime / 1000));
+	if(dTime < updateFreq + 100) { //Remove very high values
+		this.clockSeconds.setAngle(this.clockSeconds.getAngle() + 1.0 / 60.0 * 360.0 * (dTime / 1000));
+		this.clockMinutes.setAngle(this.clockMinutes.getAngle() + 1.0 / 60.0 / 60.0 * 360.0 * (dTime / 1000));
+		this.clockHours.setAngle(this.clockHours.getAngle() + 1.0 / 60.0 / 60.0 / 12.0 * 360.0 * (dTime / 1000));
 	}
 };

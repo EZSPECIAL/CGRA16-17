@@ -1,13 +1,19 @@
 /**
  * MyCylinder
- * @constructor
+ *
+ * Constructs a unit cylinder resting on the XY plane centered on the Z axis.
  */
-
-function MyCylinder(scene, slices, stacks) {
+function MyCylinder(scene, slices, stacks, texH, texV) {
+	
 	CGFobject.call(this,scene);
 
+	texH = typeof texH !== 'undefined' ? texH : 1.0;
+	texV = typeof texV !== 'undefined' ? texV : 1.0;
+	
 	this.slices = slices;
 	this.stacks = stacks;
+	this.texH = texH;
+	this.texV = texV;
 
 	this.initBuffers();
 };
@@ -28,7 +34,7 @@ MyCylinder.prototype.initBuffers = function() {
 		for(var j = 0; j <= this.stacks; j++) {
 			vertices.push(Math.cos(increment * i), Math.sin(increment * i), height_inc * j);
 			normals.push(Math.cos(increment * i), Math.sin(increment * i), 0);
-			texCoords.push(i, 1 - j);
+			texCoords.push(this.texH * i / this.slices, 1 - this.texV * j / this.stacks);
 		}
 	}
 

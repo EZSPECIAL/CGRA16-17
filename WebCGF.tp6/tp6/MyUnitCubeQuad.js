@@ -1,9 +1,10 @@
 /**
  * MyUnitCubeQuad
- * @param gl {WebGLRenderingContext}
- * @constructor
+ *
+ * Constructs a unit cube centered on the origin.
+ *
+ * @see        MyQuad
  */
-
 function MyUnitCubeQuad(scene) {
 	
 	CGFobject.call(this, scene);

@@ -1,9 +1,8 @@
 /**
  * MyQuad
- * @param gl {WebGLRenderingContext}
- * @constructor
+ *
+ * Constructs a quad resting on the XY plane centered on the origin.
  */
-
 function MyQuad(scene, minS, maxS, minT, maxT) {
 	
 	CGFobject.call(this, scene);

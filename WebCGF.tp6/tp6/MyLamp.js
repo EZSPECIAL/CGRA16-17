@@ -1,13 +1,19 @@
 /**
  * MyLamp
- * @constructor
+ *
+ * Constructs a unit hemisphere resting on the XZ plane centered on the Y axis.
  */
-
-function MyLamp(scene, slices, stacks) {
+function MyLamp(scene, slices, stacks, texH, texV) {
+	
 	CGFobject.call(this,scene);
 
+	texH = typeof texH !== 'undefined' ? texH : 1.0;
+	texV = typeof texV !== 'undefined' ? texV : 1.0;
+	
 	this.slices = slices;
 	this.stacks = stacks;
+	this.texH = texH;
+	this.texV = texV;
 
 	this.initBuffers();
 };
@@ -29,7 +35,7 @@ MyLamp.prototype.initBuffers = function() {
 		for(var j = 0; j <= this.stacks; j++) {
 			vertices.push(Math.sin(theta_inc * j) * Math.cos(phi_inc * i), Math.cos(theta_inc * j), Math.sin(theta_inc * j) * Math.sin(phi_inc * i));
 			normals.push(Math.sin(theta_inc * j) * Math.cos(phi_inc * i), Math.cos(theta_inc * j), Math.sin(theta_inc * j) * Math.sin(phi_inc * i));
-			texCoords.push(i, 1 -j);
+			texCoords.push(this.texH * i / this.slices, 1 - this.texV * j / this.stacks);
 		}
 	}
 

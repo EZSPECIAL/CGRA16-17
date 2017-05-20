@@ -1,26 +1,31 @@
 /**
  * MySubmarine
- * @param gl {WebGLRenderingContext}
- * @constructor
+ *
+ * Constructs a submarine centered on the origin pointing in -XX.
+ *
+ * @see        MyCylinder
+ * @see        MyLamp
+ * @see        MyCircle
+ * @see        MyTrap
+ * @see        MyUnitCubeQuad
  */
-
 function MySubmarine(scene) {
 	
 	CGFobject.call(this, scene);
 	
-	this.cylinder = new MyCylinder(this.scene, 20, 20);
-	this.hemiSphere = new MyLamp(this.scene, 20, 20);
+	this.cylinder = new MyCylinder(this.scene, 20, 20, 1, 1); //Distribute texture evenly throughout the surface of the cylinder
+	this.hemiSphere = new MyLamp(this.scene, 20, 20, 1, 1); //Distribute texture evenly throughout the surface of the hemisphere
 	this.circle = new MyCircle(this.scene, 20, 20);
-	this.trap = new MyTrap(this.scene, 0, 1, 0, 1);
+	this.trap = new MyTrap(this.scene, 0, 1, 0, 1, false);
 	this.cube = new MyUnitCubeQuad(this.scene);
 	
-	this.yaw = 0;
+	this.yaw = 0; //Rotation around Y axis
 	this.propellerAngle = 0.0;
 	this.pscopeHeight = 0.75;
-	this.coords = vec3.fromValues(8.0, 4.0, 8.0);
+	this.coords = vec3.fromValues(8.0, 5.0, 8.0);
 	this.turningMult = 2.0; //Turning multiplier, 1.0 equals 1° per keypress
-	this.moveMult = 1.0; //Movement speed in units/second
-	this.elevSpeed = 0.5; //Vertical movement speed
+	this.moveMult = 0.0; //Current movement speed in units/second
+	this.elevSpeed = 0.6; //Vertical movement speed
 	this.state = {noAnim: 0, turnLeft: 1, turnRight: 2, upwards: 3, downwards: 4, pUp: 5, pDown: 6};
 	this.currState = this.state.noAnim;
 };
@@ -86,8 +91,8 @@ MySubmarine.prototype.display = function() {
 	
 	this.scene.pushMatrix();
 	this.scene.translate(this.coords[0], this.coords[1], this.coords[2]);
-	this.scene.rotate(-Math.PI / 2.0 + this.yaw, 0, 1, 0);
-	
+	this.scene.rotate(Math.PI + this.yaw, 0, 1, 0);
+
 	/**
 	 * Submarine body
 	 */
@@ -316,47 +321,77 @@ MySubmarine.prototype.display = function() {
 	this.scene.popMatrix();
 };
 
+/**
+ * Rotates submarine left if submarine isn't stopped.
+ */
 MySubmarine.prototype.rotateLeft = function() {
 	
 	if(Math.abs(this.moveMult) > 0) {
 		this.yaw += this.turningMult * Math.PI / 180.0;
+
+		//Clamp angle between 0 and 2 * Math.PI
 		if(this.yaw > 2 * Math.PI) {
 			this.yaw -= 2 * Math.PI;
 		}
 	}
 };
 
+/**
+ * Rotates submarine right if submarine isn't stopped.
+ */
 MySubmarine.prototype.rotateRight = function() {
 	
 	if(Math.abs(this.moveMult) > 0) {
 		this.yaw -= this.turningMult * Math.PI / 180.0;
+
+		//Clamp angle between 0 and 2 * Math.PI
 		if(this.yaw < -2 * Math.PI) {
 			this.yaw += 2 * Math.PI;
 		}
 	}
 };
 
-MySubmarine.prototype.forward = function() {
+/**
+ * Increase submarine speed.
+ */
+MySubmarine.prototype.incSpeed = function() {
 	this.moveMult += 0.5;
 	this.moveMult = this.scene.clamp(this.moveMult, -3.0, 3.0);
 };
 
-MySubmarine.prototype.backward = function() {
+/**
+ * Decrease submarine speed.
+ */
+MySubmarine.prototype.decSpeed = function() {
 	this.moveMult -= 0.5;
 	this.moveMult = this.scene.clamp(this.moveMult, -3.0, 3.0);
 };
 
+/**
+ * Updates submarine movement by using elapsed time since the last update.
+ * 
+ * @param      {number}  dTime       Seconds between updates.
+ * @param      {number}  updateFreq  Frequency of update. (microseconds)
+ */
 MySubmarine.prototype.updateMovement = function(dTime, updateFreq) {
-	if(dTime < updateFreq + 100) {
-		this.coords[0] += -this.moveMult * Math.sin(this.yaw) * dTime;
+
+	if(dTime * 1000 < updateFreq + 100) { //Remove very high values
+		
+		//XZ Coords
+		this.coords[0] += this.moveMult * Math.cos(this.yaw) * dTime;
+		this.coords[2] += -this.moveMult * Math.sin(this.yaw) * dTime;
+		
+		//Elevation
 		if(this.currState == this.state.upwards) {
 			this.coords[1] += this.elevSpeed * dTime;
 		} else if(this.currState == this.state.downwards) {
 			this.coords[1] -= this.elevSpeed * dTime;
 		}
-		this.coords[2] += -this.moveMult * Math.cos(this.yaw) * dTime;
+
+		//Propeller
+		this.propellerAngle += 2 * this.moveMult * 2 * Math.PI * dTime; //Min speed is 0.5 units/s so 2 * this.moveMult gives 1 rotation per second at that speed
 		
-		this.propellerAngle += 2 * Math.abs(this.moveMult) * 2 * Math.PI * dTime; //Min speed is 0.5 units/s so 2 * this.moveMult gives 1 rotation per second at min
+		//Periscope
 		if(this.currState == this.state.pUp) {
 			this.pscopeHeight += this.elevSpeed * dTime;
 		} else if(this.currState == this.state.pDown) {
@@ -366,6 +401,29 @@ MySubmarine.prototype.updateMovement = function(dTime, updateFreq) {
 	}
 };
 
-MySubmarine.prototype.stateM = function(event) {
-	this.currState = event;
+/**
+ * Changes current state of the submarine.
+ *
+ * @param      {state}  state
+ */
+MySubmarine.prototype.stateM = function(state) {
+	this.currState = state;
 };
+
+/**
+ * Gets the coordinates.
+ *
+ * @return     {vec3}  Coordinates.
+ */
+MySubmarine.prototype.getCoords = function() {
+	return this.coords;
+}
+
+/**
+ * Gets the yaw.
+ *
+ * @return     {number}  Yaw in radians.
+ */
+MySubmarine.prototype.getYaw = function() {
+	return this.yaw;
+}

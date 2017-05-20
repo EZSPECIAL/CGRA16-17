@@ -1,10 +1,9 @@
 /**
  * MyTrap
- * @param gl {WebGLRenderingContext}
- * @constructor
+ *
+ * Constructs a trapezoid centered on the origin pointing downwards.
  */
-
-function MyTrap(scene, minS, maxS, minT, maxT) {
+function MyTrap(scene, minS, maxS, minT, maxT, untextured) {
 	
 	CGFobject.call(this, scene);
 	
@@ -12,7 +11,8 @@ function MyTrap(scene, minS, maxS, minT, maxT) {
 	this.maxS = maxS;
 	this.minT = minT;
 	this.maxT = maxT;
-	this.adjS = 0.1 * (maxS - minS);
+	this.adjS = 0.1 * (maxS - minS); //Texcoords skewing for the triangle edges
+	this.untextured = untextured;
 	
 	this.initBuffers();
 };
@@ -80,34 +80,36 @@ MyTrap.prototype.initBuffers = function() {
 		            0, -1, 0,
 		            0, -1, 0 ];
 
-    this.texCoords = [ this.maxS, this.minT,
-    	               this.maxS - this.adjS, this.minT,
-    	               this.minS + this.adjS, this.minT,
-    	               this.minS, this.minT,
-    	               this.maxS - this.adjS, this.maxT,
-    	               this.minS + this.adjS, this.maxT,
-    	               this.minS, this.minT,
-    	               this.minS + this.adjS, this.minT,
-    	               this.maxS - this.adjS, this.minT,
-                       this.maxS, this.minT,
-    	               this.minS + this.adjS, this.maxT,
-    	               this.maxS - this.adjS, this.maxT,
-    	               this.minS, this.minT,
-    	               this.minS, this.maxT,
-    	               this.maxS, this.minT,
-    	               this.maxS, this.maxT,
-    	               this.maxS, this.minT,
-    	               this.maxS, this.maxT,
-    	               this.minS, this.minT,
-    	               this.minS, this.maxT,
-    	               this.minS, this.minT,
-    	               this.minS, this.maxT,
-    	               this.maxS, this.minT,
-    	               this.maxS, this.maxT,
-    	               this.minS, this.maxT,
-    	               this.minS, this.minT,
-    	               this.maxS, this.maxT,
-    	               this.maxS, this.minT ]
+	if(!this.untextured) {
+	    this.texCoords = [ this.maxS, this.minT,
+	    	               this.maxS - this.adjS, this.minT,
+	    	               this.minS + this.adjS, this.minT,
+	    	               this.minS, this.minT,
+	    	               this.maxS - this.adjS, this.maxT,
+	    	               this.minS + this.adjS, this.maxT,
+	    	               this.minS, this.minT,
+	    	               this.minS + this.adjS, this.minT,
+	    	               this.maxS - this.adjS, this.minT,
+	                       this.maxS, this.minT,
+	    	               this.minS + this.adjS, this.maxT,
+	    	               this.maxS - this.adjS, this.maxT,
+	    	               this.minS, this.minT,
+	    	               this.minS, this.maxT,
+	    	               this.maxS, this.minT,
+	    	               this.maxS, this.maxT,
+	    	               this.maxS, this.minT,
+	    	               this.maxS, this.maxT,
+	    	               this.minS, this.minT,
+	    	               this.minS, this.maxT,
+	    	               this.minS, this.minT,
+	    	               this.minS, this.maxT,
+	    	               this.maxS, this.minT,
+	    	               this.maxS, this.maxT,
+	    	               this.minS, this.maxT,
+	    	               this.minS, this.minT,
+	    	               this.maxS, this.maxT,
+	    	               this.maxS, this.minT ];
+	}
     
     this.indices = [ 0, 1, 4,
     	             1, 5, 4,

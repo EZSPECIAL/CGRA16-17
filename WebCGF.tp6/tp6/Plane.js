@@ -1,8 +1,8 @@
 /** Represents a plane with nrDivs divisions along both axis, with center at (0,0) */
 function Plane(scene, nrDivs, xres, yres) {
+
 	CGFobject.call(this,scene);
 
-	// nrDivs = 1 if not provided
 	nrDivs = typeof nrDivs !== 'undefined' ? nrDivs : 1;
 	xres = typeof xres !== 'undefined' ? xres : 1.0;
 	yres = typeof yres !== 'undefined' ? yres : 1.0;
@@ -72,7 +72,7 @@ Plane.prototype.initBuffers = function() {
 			   11,  8,
 			 8, 12, 9, 13, 10, 14, 11, 15,
 		]
-	Interpreting this index list as a TRIANGLE_STRIP will draw rows of the plane (with degenerate triangles in between. */
+	Interpreting this index list as a TRIANGLE_STRIP will draw rows of the plane with degenerate triangles in between. */
 
 	this.indices = [];
 	var ind = 0;
@@ -86,7 +86,7 @@ Plane.prototype.initBuffers = function() {
 
 			ind++;
 		}
-		if(j+1 < this.nrDivs)
+		if(j + 1 < this.nrDivs)
 		{
 			// Extra vertices to create degenerate triangles so that the strip can wrap on the next row
 			// degenerate triangles will not generate fragments

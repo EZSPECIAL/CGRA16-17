@@ -1,13 +1,13 @@
 /**
  * MyCircle
- * @constructor
+ * 
+ * Constructs a circle on the XY plane centered on the origin.
  */
-
 function MyCircle(scene, slices) {
+	
 	CGFobject.call(this,scene);
 
 	this.slices = slices;
-
 	this.initBuffers();
 };
 
@@ -22,7 +22,8 @@ MyCircle.prototype.initBuffers = function() {
 	var indices = [];
 	var increment = 2 * Math.PI / this.slices;
 
-	vertices.push(0, 0, 0); //Center of circle
+	//Center of circle first (for TRIANGLE_FAN)
+	vertices.push(0, 0, 0);
 	normals.push(0, 0, 1);
 	texCoords.push(0.5, 0.5);
 	
@@ -36,7 +37,7 @@ MyCircle.prototype.initBuffers = function() {
 		indices.push(i);
 	}
 	
-	indices.push(1);
+	indices.push(1); //Close the TRIANGLE_FAN
 	
 	this.vertices = vertices;
 	this.normals = normals;
